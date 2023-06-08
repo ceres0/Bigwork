@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'f:\CodingRepository\BigWork_bak\test.ui'
+# Form implementation generated from reading ui file 'f:\CodingRepository\BigWork\test.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -14,17 +14,29 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(554, 355)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.buttonOpenAlignDialog = QtWidgets.QPushButton(self.centralwidget)
+        self.buttonOpenAlignDialog.setGeometry(QtCore.QRect(160, 180, 111, 41))
+        self.buttonOpenAlignDialog.setObjectName("buttonOpenAlignDialog")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 554, 23))
         self.menubar.setObjectName("menubar")
+        self.menu = QtWidgets.QMenu(self.menubar)
+        self.menu.setObjectName("menu")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.action1 = QtWidgets.QAction(MainWindow)
+        self.action1.setObjectName("action1")
+        self.action2 = QtWidgets.QAction(MainWindow)
+        self.action2.setObjectName("action2")
+        self.menu.addAction(self.action1)
+        self.menu.addAction(self.action2)
+        self.menubar.addAction(self.menu.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -32,3 +44,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.buttonOpenAlignDialog.setText(_translate("MainWindow", "图像配准"))
+        self.menu.setTitle(_translate("MainWindow", "编辑"))
+        self.action1.setText(_translate("MainWindow", "1"))
+        self.action2.setText(_translate("MainWindow", "2"))

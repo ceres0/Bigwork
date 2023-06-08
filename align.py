@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from numba import cuda
+import math
 
 MAX_FEATURES = 500
 corners = None
@@ -71,17 +73,54 @@ def OptimizeSeam(refImg, alignedImg, stitchedImg):
             stitchedImg[y, x, 1] = alpha * refImg[y, x, 1] + (1 - alpha) * alignedImg[y, x, 1]
             stitchedImg[y, x, 2] = alpha * refImg[y, x, 2] + (1 - alpha) * alignedImg[y, x, 2]
     return stitchedImg
-            
 
+@cuda.jit
+def GPUKernel(refImg, alignedImg, stitchedImg, st, width, rows,cols):
+    tx, ty = cuda.grid(2)
+    if tx < width and ty < rows:
+        if alignedImg[ty, tx + st, 0] == 0 and alignedImg[ty, tx + st, 1] == 0 and alignedImg[ty, tx + st, 2] == 0:
+            alpha = 1
+        else:
+            alpha = (width - tx) / width
+        # stitchedImg[ty, tx + st, 0] = 0
+        # stitchedImg[ty, tx + st, 1] = 0
+        # stitchedImg[ty, tx + st, 2] = 0
+        stitchedImg[ty, tx + st, 0] = alpha * refImg[ty, tx + st, 0] + (1 - alpha) * alignedImg[ty, tx + st, 0]
+        stitchedImg[ty, tx + st, 1] = alpha * refImg[ty, tx + st, 1] + (1 - alpha) * alignedImg[ty, tx + st, 1]
+        stitchedImg[ty, tx + st, 2] = alpha * refImg[ty, tx + st, 2] + (1 - alpha) * alignedImg[ty, tx + st, 2]
+
+# GPU加速优化连接处的拼接
+def OptimizeSeamGPU(refImg, alignedImg, stitchedImg):
+    st = min(corners[0][0][0], corners[1][0][0])
+    width = refImg.shape[1] - st
+    rows = refImg.shape[0]
+    cols = refImg.shape[1]
+    
+    threadsperblock = (16, 16)
+    blockspergrid_x = int(math.ceil(width / threadsperblock[0])) + 1
+    blockspergrid_y = int(math.ceil(rows / threadsperblock[1])) + 1
+    blockspergrid = (blockspergrid_x, blockspergrid_y)
+    
+    dRefImg = cuda.to_device(refImg)
+    dAlignedImg = cuda.to_device(alignedImg)
+    dStitchedImg = cuda.to_device(stitchedImg)
+    GPUKernel[blockspergrid, threadsperblock](dRefImg, dAlignedImg, dStitchedImg, st, width, rows, cols)
+    cuda.synchronize()
+    dst = dStitchedImg.copy_to_host()
+    return dst
+    
+            
 # 自我实现的拼接函数
-def MyStitch(refImg, alignedImg, alignImg):
+def MyStitch(refImg, alignedImg):
     dst_width = alignedImg.shape[1]
     dst_height = refImg.shape[0]
     dst = np.zeros((dst_height, dst_width, 3), dtype=np.uint8)
     dst[0:dst_height, 0:dst_width] = alignedImg
     dst[0:dst_height, 0:refImg.shape[1]] = refImg
-    ShowImg(dst)
-    dst1 = OptimizeSeam(refImg, alignedImg, dst)
+    # ShowResizedImg(dst, 0.5)
+    dst1 = OptimizeSeamGPU(refImg, alignedImg, dst)
+    # ShowResizedImg(dst1, 0.5)
+    # ShowImg(dst1)
     return dst, dst1
 
 # 拼接配准后的图像和基准图像
@@ -145,9 +184,9 @@ if __name__ == '__main__':
     # ShowResizedImg(matchedImg, 0.5)
     # cv2.imshow('refImg', refImg)
     # ShowImg(alignedImg)
-    stitchedImg, stitchedImg1 = MyStitch(refImg, alignedImg, alignImg)
-    cv2.imwrite('img/stitchedImg.jpg', stitchedImg)
-    cv2.imwrite('img/stitchedImg1.jpg', stitchedImg1)
+    stitchedImg, stitchedImg1 = MyStitch(refImg, alignedImg)
+    # cv2.imwrite('img/stitchedImg.jpg', stitchedImg)
+    # cv2.imwrite('img/stitchedImg1.jpg', stitchedImg1)
     # stitchedImg = Stitch(refImg, alignImg)
     # cv2.imshow("拼接图像", stitchedImg)
     # cv2.waitKey(0)

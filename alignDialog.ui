@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
+    <width>895</width>
     <height>491</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>40</x>
      <y>10</y>
-     <width>161</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
@@ -29,8 +29,8 @@
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>50</y>
+     <x>40</x>
+     <y>230</y>
      <width>171</width>
      <height>161</height>
     </rect>
@@ -73,8 +73,8 @@
   <widget class="QPushButton" name="buttonAlign">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>410</y>
+     <x>340</x>
+     <y>330</y>
      <width>121</width>
      <height>41</height>
     </rect>
@@ -86,8 +86,8 @@
   <widget class="QWidget" name="verticalLayoutWidget_4">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>230</y>
+     <x>310</x>
+     <y>130</y>
      <width>171</width>
      <height>161</height>
     </rect>
@@ -97,13 +97,48 @@
      <widget class="QGraphicsView" name="alignedImgView"/>
     </item>
     <item>
-     <widget class="QPushButton" name="buttonDoloadAlignedImg">
+     <widget class="QPushButton" name="buttonDownloadAlignedImg">
       <property name="text">
        <string>下载配准后图片</string>
       </property>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget_5">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>130</y>
+     <width>271</width>
+     <height>161</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="stitchedImgLayout">
+    <item>
+     <widget class="QGraphicsView" name="stitchedImgView"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="buttonDownloadStitchedImg">
+      <property name="text">
+       <string>下载配准后图片</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="buttonStitch">
+   <property name="geometry">
+    <rect>
+     <x>610</x>
+     <y>330</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>拼接</string>
+   </property>
   </widget>
  </widget>
  <resources/>

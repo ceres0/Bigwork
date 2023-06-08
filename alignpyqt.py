@@ -20,8 +20,8 @@ class AlignDialog(QWidget,alignDialog):
         self.buttonUploadAlignImg.clicked.connect(lambda:OpenImage(self, self.alignImgView, 'align'))
         self.buttonAlign.clicked.connect(lambda:AlignImage(self, self.alignedImgView))
         self.buttonStitch.clicked.connect(lambda:StitchImage(self, self.stitchedImgView))
-        self.buttonDownloadAlignedImg.clicked.connect(lambda:SaveImage(self, self.alignedImgView))
-        self.buttonDownloadStitchedImg.clicked.connect(lambda:SaveImage(self, self.stitchedImgView))
+        self.buttonDownloadAlignedImg.clicked.connect(lambda:SaveImage(self, 'aligned'))
+        self.buttonDownloadStitchedImg.clicked.connect(lambda:SaveImage(self, 'stitched'))
         self.img = {}
         
 def OpenImage(self, imgView, imgG):  # 选择本地图片上传
@@ -35,8 +35,16 @@ def OpenImage(self, imgView, imgG):  # 选择本地图片上传
     imgView.show()  # 显示图片视图
     self.img[imgG] = cv2.imread(imgName)
     
-def SaveImage(self, imgView):  # 保存图片
-    pass
+def SaveImage(self, imgG):  # 保存图片
+    if imgG not in self.img or self.img[imgG] == '':
+        QMessageBox.warning(self, "警告", "未生成{:}图片".format('配准' if imgG == 'aligned' else '拼接'))
+        return
+    img = self.img[imgG]
+    imgName, imgType = QFileDialog.getSaveFileName(self, "保存图片", "", "*.jpg;;*.png;;All Files(*)")    # 弹出一个文件选择框，第一个返回值imgName记录选中的文件路径+文件名，第二个返回值imgType记录文件的类型
+    if imgName == "":
+        return
+    cv2.imwrite(imgName, img)
+    QMessageBox.information(self, "提示", "保存成功")
     
 def AlignImage(self, imgView):
     if 'ref' not in self.img  or 'align' not in self.img :
